@@ -4,16 +4,10 @@ import time
 
 pygame.init()
 
-import pygame
-import sys
-
-pygame.init()
-
 # ================= CONFIGURAÇÕES =================
 LARGURA, ALTURA = 900, 600
 tela = pygame.display.set_mode((LARGURA, ALTURA))
-pygame.display.set_caption("Menu com Fundo e Botões")
-
+pygame.display.set_caption("Jogo de Geografia")
 clock = pygame.time.Clock()
 
 # ================= CORES =================
@@ -21,92 +15,97 @@ BRANCO = (255, 255, 255)
 PRETO = (0, 0, 0)
 
 # ================= FONTES =================
-fonte = pygame.font.SysFont("arial", 26)
-fonte_titulo = pygame.font.SysFont("arial", 48)
+fonte = pygame.font.SysFont("arial", 24)
+fonte_titulo = pygame.font.SysFont("arial", 40)
 
-# ================= FUNDO =================
-fundo_menu = pygame.image.load("GUESS-THE-FLAG/FUNDO DO JOGO.png")
-fundo_menu = pygame.transform.scale(fundo_menu, (LARGURA, ALTURA))
-
-# ================= SPRITE BOTÃO =================
-class Botao(pygame.sprite.Sprite):
-    def __init__(self, x, y, w, h, texto):
-        super().__init__()
-        self.image = pygame.Surface((w, h), pygame.SRCALPHA)
-        self.image.fill((255, 255, 255, 200))  # leve transparência
-        pygame.draw.rect(self.image, PRETO, self.image.get_rect(), 3)
-
-        txt = fonte.render(texto, True, PRETO)
-        self.image.blit(
-            txt,
-            (w // 2 - txt.get_width() // 2,
-             h // 2 - txt.get_height() // 2)
-        )
-
-        self.rect = self.image.get_rect(topleft=(x, y))
-        self.texto = texto
-
-# ================= BOTÕES =================
-btn_jogar = Botao(350, 260, 200, 55, "JOGAR")
-btn_conquistas = Botao(350, 340, 200, 55, "CONQUISTAS")
-
-botoes_menu = pygame.sprite.Group()
-botoes_menu.add(btn_jogar, btn_conquistas)
-
-# ================= LOOP PRINCIPAL =================
-rodando = True
-while rodando:
-    for evento in pygame.event.get():
-        if evento.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-        if evento.type == pygame.MOUSEBUTTONDOWN:
-            pos = evento.pos
-            if btn_jogar.rect.collidepoint(pos):
-                print("Clicou em JOGAR")
-            elif btn_conquistas.rect.collidepoint(pos):
-                print("Clicou em CONQUISTAS")
-
-    # --- DESENHA FUNDO ---
-    tela.blit(fundo_menu, (0, 0))
-
-    # --- DESENHA BOTÕES ---
-    botoes_menu.draw(tela)
-
-    pygame.display.update()
-    clock.tick(60)
+# ================= ESTADOS =================
+MENU = 0
+MODOS = 1
+QUIZ = 2
+RESULTADO = 3
+estado = MENU
 
 # ================= CONTROLE =================
 modo = ""
 indice = 0
-mensagem = ""
+imagem_resultado = None
 
 # ================= TEMPO =================
 TEMPO_MAX = 10
 inicio_tempo = 0
 
-# ================= PERGUNTAS (texto) =================
+# ================= IMAGENS =================
+fundo_menu = pygame.transform.scale(
+    pygame.image.load("FUNDO DO JOGO.png"), (LARGURA, ALTURA)
+)
+fundo_quiz = pygame.transform.scale(
+    pygame.image.load("FUNDO DO JOGO 2.png"), (LARGURA, ALTURA)
+)
+
+img_pais = pygame.transform.scale(
+    pygame.image.load("FRANÇA.png"), (400, 250)
+)
+img_rn = pygame.transform.scale(
+    pygame.image.load("NATAL.png"), (400, 250)
+)
+img_estado = pygame.transform.scale(
+    pygame.image.load("RN.png"), (400, 250)
+)
+
+img_acerto = pygame.transform.scale(
+    pygame.image.load("ACERTO.png"), (400, 200)
+)
+img_erro = pygame.transform.scale(
+    pygame.image.load("ERRO.png"), (400, 200)
+)
+
+# ================= PERGUNTAS =================
 perguntas = {
     "Países": [
-        ("Qual país tem a bandeira verde e amarela?", ["A - Brasil", "B - Argentina", "C - Portugal"], "A"),
-        ("Qual país tem a bandeira azul, branca e celeste?", ["A - Chile", "B - Argentina", "C - Uruguai"], "B"),
-        ("Qual país é europeu e fala português?", ["A - Espanha", "B - Itália", "C - Portugal"], "C"),
+        {
+            "imagem": img_pais,
+            "opcoes": [
+                "A - França",
+                "B - Argentina",
+                "C - Portugal",
+                "D - México"
+            ],
+            "resposta": "A"
+        }
+    ],
+    "Municípios do RN": [
+        {
+            "imagem": img_rn,
+            "opcoes": [
+                "A - Mossoró",
+                "B - Natal",
+                "C - Caicó",
+                "D - Currais Novos"
+            ],
+            "resposta": "B"
+        }
     ],
     "Estados Brasileiros": [
-        ("Qual estado é conhecido como SP?", ["A - São Paulo", "B - Bahia", "C - Paraná"], "A"),
-        ("Qual estado tem a cidade do Cristo Redentor?", ["A - Espírito Santo", "B - Rio de Janeiro", "C - Sergipe"], "B"),
-        ("Qual estado tem minas e queijo famoso?", ["A - Goiás", "B - Minas Gerais", "C - Tocantins"], "B"),
+        {
+            "imagem": img_estado,
+            "opcoes": [
+                "A - São Paulo",
+                "B - Bahia",
+                "C - Rio Grande do Norte",
+                "D - Ceará"
+            ],
+            "resposta": "C"
+        }
     ]
 }
 
-# ================= SPRITES =================
+# ================= CLASSE BOTÃO =================
 class Botao(pygame.sprite.Sprite):
     def __init__(self, x, y, w, h, texto):
         super().__init__()
         self.image = pygame.Surface((w, h), pygame.SRCALPHA)
-        self.image.fill((255, 255, 255, 200))  # leve transparência
-        pygame.draw.rect(self.image, PRETO, self.image.get_rect(), 3)
+        self.image.fill((255, 255, 255, 220))
+        pygame.draw.rect(self.image, PRETO, self.image.get_rect(), 2)
 
         txt = fonte.render(texto, True, PRETO)
         self.image.blit(
@@ -117,7 +116,6 @@ class Botao(pygame.sprite.Sprite):
 
         self.rect = self.image.get_rect(topleft=(x, y))
         self.texto = texto
-
 
 # ================= GRUPOS =================
 botoes_menu = pygame.sprite.Group()
@@ -129,49 +127,44 @@ btn_jogar = Botao(350, 260, 200, 55, "JOGAR")
 botoes_menu.add(btn_jogar)
 
 btn_paises = Botao(300, 200, 300, 50, "PAÍSES")
-btn_estados = Botao(300, 270, 300, 50, "ESTADOS BRASILEIROS")
-botoes_modos.add(btn_paises, btn_estados)
+btn_municipios = Botao(300, 270, 300, 50, "MUNICÍPIOS DO RN")
+btn_estados = Botao(300, 340, 300, 50, "ESTADOS BRASILEIROS")
+botoes_modos.add(btn_paises, btn_municipios, btn_estados)
 
 # ================= FUNÇÕES =================
 def carregar_pergunta():
     botoes_opcoes.empty()
-    _, opcoes, _ = perguntas[modo][indice]
-
-    for i, opcao in enumerate(opcoes):
-        botoes_opcoes.add(Botao(300, 350 + i * 45, 300, 35, opcao))
-
+    dados = perguntas[modo][indice]
+    for i, opcao in enumerate(dados["opcoes"]):
+        botoes_opcoes.add(Botao(300, 360 + i * 45, 300, 35, opcao))
 
 def tela_menu():
-    tela.fill(VERMELHO)
+    tela.blit(fundo_menu, (0, 0))
     titulo = fonte_titulo.render("JOGO DE GEOGRAFIA", True, PRETO)
-    tela.blit(titulo, (LARGURA // 2 - titulo.get_width() // 2, 120))
+    tela.blit(titulo, (LARGURA//2 - titulo.get_width()//2, 120))
     botoes_menu.draw(tela)
 
-
 def tela_modos():
-    tela.fill(VERMELHO)
+    tela.blit(fundo_menu, (0, 0))
     titulo = fonte_titulo.render("ESCOLHA O MODO", True, PRETO)
-    tela.blit(titulo, (LARGURA // 2 - titulo.get_width() // 2, 100))
+    tela.blit(titulo, (LARGURA//2 - titulo.get_width()//2, 120))
     botoes_modos.draw(tela)
 
-
 def tela_quiz():
-    tela.fill(AZUL)
-    pergunta_texto, _, _ = perguntas[modo][indice]
-    pergunta_render = fonte_titulo.render(pergunta_texto, True, BRANCO)
-    tela.blit(pergunta_render, (LARGURA//2 - pergunta_render.get_width()//2, 150))
-
+    tela.blit(fundo_quiz, (0, 0))
+    dados = perguntas[modo][indice]
+    tela.blit(dados["imagem"], (250, 80))
     botoes_opcoes.draw(tela)
 
     tempo = TEMPO_MAX - int(time.time() - inicio_tempo)
     tela.blit(fonte.render(f"Tempo: {tempo}s", True, BRANCO), (20, 20))
 
-
 def tela_resultado():
-    tela.fill(VERDE)
-    txt = fonte_titulo.render(mensagem, True, BRANCO)
-    tela.blit(txt, (LARGURA // 2 - txt.get_width() // 2, 260))
-
+    tela.blit(fundo_quiz, (0, 0))
+    tela.blit(
+        imagem_resultado,
+        (LARGURA//2 - imagem_resultado.get_width()//2, 220)
+    )
 
 # ================= LOOP PRINCIPAL =================
 rodando = True
@@ -193,6 +186,8 @@ while rodando:
             elif estado == MODOS:
                 if btn_paises.rect.collidepoint(pos):
                     modo = "Países"
+                elif btn_municipios.rect.collidepoint(pos):
+                    modo = "Municípios do RN"
                 elif btn_estados.rect.collidepoint(pos):
                     modo = "Estados Brasileiros"
 
@@ -203,17 +198,18 @@ while rodando:
                     estado = QUIZ
 
             elif estado == QUIZ:
-                resposta = perguntas[modo][indice][2]
+                resposta = perguntas[modo][indice]["resposta"]
                 for botao in botoes_opcoes:
                     if botao.rect.collidepoint(pos):
                         letra = botao.texto[0]
-                        mensagem = "ACERTOU!" if letra == resposta else "ERROU!"
+                        imagem_resultado = img_acerto if letra == resposta else img_erro
                         estado = RESULTADO
 
             elif estado == RESULTADO:
                 indice += 1
                 if indice < len(perguntas[modo]):
                     inicio_tempo = time.time()
+                    imagem_resultado = None
                     carregar_pergunta()
                     estado = QUIZ
                 else:
@@ -221,7 +217,7 @@ while rodando:
                     modo = ""
 
     if estado == QUIZ and TEMPO_MAX - int(time.time() - inicio_tempo) <= 0:
-        mensagem = "TEMPO ESGOTADO!"
+        imagem_resultado = img_erro
         estado = RESULTADO
 
     if estado == MENU:
