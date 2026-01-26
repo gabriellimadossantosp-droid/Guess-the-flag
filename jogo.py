@@ -7,8 +7,7 @@ pygame.init()
 # ================= CONFIGURAÇÕES =================
 LARGURA, ALTURA = 900, 600
 tela = pygame.display.set_mode((LARGURA, ALTURA))
-pygame.display.set_caption("Adivinhe a bandeira")
-
+pygame.display.set_caption("Jogo de Geografia")
 clock = pygame.time.Clock()
 
 # ================= CORES =================
@@ -23,8 +22,7 @@ fonte_titulo = pygame.font.SysFont("arial", 40)
 MENU = 0
 MODOS = 1
 QUIZ = 2
-ACERTOU_OU_ERROU = 3
-RESULTADO_FINAL = 4
+RESULTADO = 3
 estado = MENU
 
 # ================= CONTROLE =================
@@ -36,25 +34,23 @@ imagem_resultado = None
 TEMPO_MAX = 10
 inicio_tempo = 0
 
-# ================= FUNDOS =================
-fundo_menu = pygame.image.load("FUNDO DO JOGO.png")
-fundo_menu = pygame.transform.scale(fundo_menu, (LARGURA, ALTURA))
+# ================= IMAGENS =================
+fundo_menu = pygame.transform.scale(
+    pygame.image.load("FUNDO DO JOGO.png"), (LARGURA, ALTURA)
+)
+fundo_quiz = pygame.transform.scale(
+    pygame.image.load("FUNDO DO JOGO 2.png"), (LARGURA, ALTURA)
+)
 
-fundo_quiz = pygame.image.load("FUNDO DO JOGO 2.png")
-fundo_quiz = pygame.transform.scale(fundo_quiz, (LARGURA, ALTURA))
-
-# ================= IMAGENS DAS BANDEIRAS =================
-img_pais = pygame.image.load("FRANÇA.png")
-img_rn = pygame.image.load("NATAL.png")
-img_estado = pygame.image.load("RN.png")
-
-img_pais = pygame.transform.scale(img_pais, (400, 250))
-img_rn = pygame.transform.scale(img_rn, (400, 250))
-img_estado = pygame.transform.scale(img_estado, (400, 250))
-
-# ================= IMAGENS RESULTADO =================
-img_acerto = pygame.image.load("ACERTO.png")
-img_erro = pygame.image.load("ERRO.png")
+img_pais = pygame.transform.scale(
+    pygame.image.load("FRANÇA.png"), (400, 250)
+)
+img_rn = pygame.transform.scale(
+    pygame.image.load("NATAL.png"), (400, 250)
+)
+img_estado = pygame.transform.scale(
+    pygame.image.load("RN.png"), (400, 250)
+)
 
 img_acerto = pygame.transform.scale(
     pygame.image.load("ACERTO.png"), (400, 200)
@@ -65,38 +61,42 @@ img_erro = pygame.transform.scale(
 
 # ================= PERGUNTAS =================
 perguntas = {
-    "Países": {
-        "imagem": img_pais,
-        "opcoes": [
-            "A - FRANÇA",
-            "B - Argentina",
-            "C - Portugal",
-            "D - México"
-        ],
-        "resposta": "A"
-    },
-
-    "Municípios do RN": {
-        "imagem": img_rn,
-        "opcoes": [
-            "A - Mossoró",
-            "B - Natal",
-            "C - Caicó",
-            "D - Currais Novos"
-        ],
-        "resposta": "B"
-    },
-
-    "Estados Brasileiros": {
-        "imagem": img_estado,
-        "opcoes": [
-            "A - São Paulo",
-            "B - Bahia",
-            "C - Rio Grande Do Norte",
-            "D - Ceará"
-        ],
-        "resposta": "C"
-    }
+    "Países": [
+        {
+            "imagem": img_pais,
+            "opcoes": [
+                "A - França",
+                "B - Argentina",
+                "C - Portugal",
+                "D - México"
+            ],
+            "resposta": "A"
+        }
+    ],
+    "Municípios do RN": [
+        {
+            "imagem": img_rn,
+            "opcoes": [
+                "A - Mossoró",
+                "B - Natal",
+                "C - Caicó",
+                "D - Currais Novos"
+            ],
+            "resposta": "B"
+        }
+    ],
+    "Estados Brasileiros": [
+        {
+            "imagem": img_estado,
+            "opcoes": [
+                "A - São Paulo",
+                "B - Bahia",
+                "C - Rio Grande do Norte",
+                "D - Ceará"
+            ],
+            "resposta": "C"
+        }
+    ]
 }
 
 # ================= CLASSE BOTÃO =================
@@ -134,10 +134,9 @@ botoes_modos.add(btn_paises, btn_municipios, btn_estados)
 # ================= FUNÇÕES =================
 def carregar_pergunta():
     botoes_opcoes.empty()
-    dados = perguntas[MODOS]
-
-    for i, opcao in enumerate(dados ["opcoes"]):
-        botoes_opcoes.add(Botao(300, 350 + i * 45, 300, 35, opcao))
+    dados = perguntas[modo][indice]
+    for i, opcao in enumerate(dados["opcoes"]):
+        botoes_opcoes.add(Botao(300, 360 + i * 45, 300, 35, opcao))
 
 def tela_menu():
     tela.blit(fundo_menu, (0, 0))
@@ -153,10 +152,8 @@ def tela_modos():
 
 def tela_quiz():
     tela.blit(fundo_quiz, (0, 0))
-    imagem = perguntas[modo]['imagem']
-
-    tela.blit(imagem,(250,80))
-
+    dados = perguntas[modo][indice]
+    tela.blit(dados["imagem"], (250, 80))
     botoes_opcoes.draw(tela)
 
     tempo = TEMPO_MAX - int(time.time() - inicio_tempo)
@@ -201,15 +198,14 @@ while rodando:
                     estado = QUIZ
 
             elif estado == QUIZ:
-                resposta = perguntas[modo][(resposta)]
+                resposta = perguntas[modo][indice]["resposta"]
                 for botao in botoes_opcoes:
                     if botao.rect.collidepoint(pos):
                         letra = botao.texto[0]
                         imagem_resultado = img_acerto if letra == resposta else img_erro
-                        estado = ACERTOU_OU_ERROU
-                        
+                        estado = RESULTADO
 
-            elif estado == ACERTOU_OU_ERROU:
+            elif estado == RESULTADO:
                 indice += 1
                 if indice < len(perguntas[modo]):
                     inicio_tempo = time.time()
@@ -222,7 +218,7 @@ while rodando:
 
     if estado == QUIZ and TEMPO_MAX - int(time.time() - inicio_tempo) <= 0:
         imagem_resultado = img_erro
-        estado = ACERTOU_OU_ERROU
+        estado = RESULTADO
 
     if estado == MENU:
         tela_menu()
@@ -230,7 +226,7 @@ while rodando:
         tela_modos()
     elif estado == QUIZ:
         tela_quiz()
-    elif estado == ACERTOU_OU_ERROU:
+    elif estado == RESULTADO:
         tela_resultado()
 
     pygame.display.update()
