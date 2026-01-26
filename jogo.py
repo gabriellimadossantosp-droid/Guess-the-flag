@@ -7,7 +7,7 @@ pygame.init()
 # ================= CONFIGURAÇÕES =================
 LARGURA, ALTURA = 900, 600
 tela = pygame.display.set_mode((LARGURA, ALTURA))
-pygame.display.set_caption("Jogo de Geografia")
+pygame.display.set_caption("Adivinhe a bandeira")
 
 clock = pygame.time.Clock()
 
@@ -23,7 +23,8 @@ fonte_titulo = pygame.font.SysFont("arial", 40)
 MENU = 0
 MODOS = 1
 QUIZ = 2
-RESULTADO = 3
+ACERTOU_OU_ERROU = 3
+RESULTADO_FINAL = 4
 estado = MENU
 
 # ================= CONTROLE =================
@@ -36,24 +37,24 @@ TEMPO_MAX = 10
 inicio_tempo = 0
 
 # ================= FUNDOS =================
-fundo_menu = pygame.image.load("jogo_pygame/FUNDO DO JOGO.png")
+fundo_menu = pygame.image.load("FUNDO DO JOGO.png")
 fundo_menu = pygame.transform.scale(fundo_menu, (LARGURA, ALTURA))
 
-fundo_quiz = pygame.image.load("jogo_pygame/FUNDO DO JOGO 2.png")
+fundo_quiz = pygame.image.load("FUNDO DO JOGO 2.png")
 fundo_quiz = pygame.transform.scale(fundo_quiz, (LARGURA, ALTURA))
 
 # ================= IMAGENS DAS BANDEIRAS =================
-img_pais = pygame.image.load("jogo_pygame/FRANÇA.png")
-img_rn = pygame.image.load("jogo_pygame/NATAL.png")
-img_estado = pygame.image.load("jogo_pygame/RN.png")
+img_pais = pygame.image.load("FRANÇA.png")
+img_rn = pygame.image.load("NATAL.png")
+img_estado = pygame.image.load("RN.png")
 
 img_pais = pygame.transform.scale(img_pais, (400, 250))
 img_rn = pygame.transform.scale(img_rn, (400, 250))
 img_estado = pygame.transform.scale(img_estado, (400, 250))
 
 # ================= IMAGENS RESULTADO =================
-img_acerto = pygame.image.load("jogo_pygame/ACERTO.png")
-img_erro = pygame.image.load("jogo_pygame/ERRO.png")
+img_acerto = pygame.image.load("ACERTO.png")
+img_erro = pygame.image.load("ERRO.png")
 
 img_acerto = pygame.transform.scale(img_acerto, (400, 200))
 img_erro = pygame.transform.scale(img_erro, (400, 200))
@@ -63,7 +64,7 @@ perguntas = {
     "Países": {
         "imagem": img_pais,
         "opcoes": [
-            "A - Brasil",
+            "A - FRANÇA",
             "B - Argentina",
             "C - Portugal",
             "D - México"
@@ -87,10 +88,10 @@ perguntas = {
         "opcoes": [
             "A - São Paulo",
             "B - Bahia",
-            "C - Paraná",
+            "C - Rio Grande Do Norte",
             "D - Ceará"
         ],
-        "resposta": "A"
+        "resposta": "C"
     }
 }
 # ================= CLASSE BOTÃO =================
@@ -130,9 +131,9 @@ botoes_modos.add(btn_paises, btn_municipios, btn_estados)
 # ================= FUNÇÕES =================
 def carregar_pergunta():
     botoes_opcoes.empty()
-    pergunta_texto, opcoes, _ = perguntas[modo][indice]
+    dados = perguntas[MODOS]
 
-    for i, opcao in enumerate(opcoes):
+    for i, opcao in enumerate(dados ["opcoes"]):
         botoes_opcoes.add(Botao(300, 350 + i * 45, 300, 35, opcao))
 
 def tela_menu():
@@ -149,12 +150,9 @@ def tela_modos():
 
 def tela_quiz():
     tela.blit(fundo_quiz, (0, 0))
-    pergunta_texto, _, _ = perguntas[modo][indice]
-    pergunta_render = fonte.render(pergunta_texto, True, BRANCO)
-    tela.blit(
-        pergunta_render,
-        (LARGURA // 2 - pergunta_render.get_width() // 2, 150)
-    )
+    imagem = perguntas[modo]['imagem']
+
+    tela.blit(imagem,(250,80))
 
     botoes_opcoes.draw(tela)
 
@@ -201,14 +199,15 @@ while rodando:
                     estado = QUIZ
 
             elif estado == QUIZ:
-                resposta = perguntas[modo][indice][2]
+                resposta = perguntas[modo][(resposta)]
                 for botao in botoes_opcoes:
                     if botao.rect.collidepoint(pos):
                         letra = botao.texto[0]
                         imagem_resultado = img_acerto if letra == resposta else img_erro
-                        estado = RESULTADO
+                        estado = ACERTOU_OU_ERROU
+                        
 
-            elif estado == RESULTADO:
+            elif estado == ACERTOU_OU_ERROU:
                 indice += 1
                 if indice < len(perguntas[modo]):
                     imagem_resultado = None
@@ -221,7 +220,7 @@ while rodando:
 
     if estado == QUIZ and TEMPO_MAX - int(time.time() - inicio_tempo) <= 0:
         imagem_resultado = img_erro
-        estado = RESULTADO
+        estado = ACERTOU_OU_ERROU
 
     if estado == MENU:
         tela_menu()
@@ -229,7 +228,7 @@ while rodando:
         tela_modos()
     elif estado == QUIZ:
         tela_quiz()
-    elif estado == RESULTADO:
+    elif estado == ACERTOU_OU_ERROU:
         tela_resultado()
 
     pygame.display.update()
