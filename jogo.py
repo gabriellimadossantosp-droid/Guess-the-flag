@@ -4,30 +4,78 @@ import time
 
 pygame.init()
 
+import pygame
+import sys
+
+pygame.init()
+
 # ================= CONFIGURAÇÕES =================
 LARGURA, ALTURA = 900, 600
 tela = pygame.display.set_mode((LARGURA, ALTURA))
-pygame.display.set_caption("Jogo de Geografia")
+pygame.display.set_caption("Menu com Fundo e Botões")
 
 clock = pygame.time.Clock()
 
 # ================= CORES =================
 BRANCO = (255, 255, 255)
 PRETO = (0, 0, 0)
-AZUL = (20, 90, 120)
-VERDE = (40, 120, 80)
-VERMELHO = (180, 30, 30)
 
 # ================= FONTES =================
 fonte = pygame.font.SysFont("arial", 26)
 fonte_titulo = pygame.font.SysFont("arial", 48)
 
-# ================= ESTADOS =================
-MENU = 0
-MODOS = 1
-QUIZ = 2
-RESULTADO = 3
-estado = MENU
+# ================= FUNDO =================
+fundo_menu = pygame.image.load("GUESS-THE-FLAG/FUNDO DO JOGO.png")
+fundo_menu = pygame.transform.scale(fundo_menu, (LARGURA, ALTURA))
+
+# ================= SPRITE BOTÃO =================
+class Botao(pygame.sprite.Sprite):
+    def __init__(self, x, y, w, h, texto):
+        super().__init__()
+        self.image = pygame.Surface((w, h), pygame.SRCALPHA)
+        self.image.fill((255, 255, 255, 200))  # leve transparência
+        pygame.draw.rect(self.image, PRETO, self.image.get_rect(), 3)
+
+        txt = fonte.render(texto, True, PRETO)
+        self.image.blit(
+            txt,
+            (w // 2 - txt.get_width() // 2,
+             h // 2 - txt.get_height() // 2)
+        )
+
+        self.rect = self.image.get_rect(topleft=(x, y))
+        self.texto = texto
+
+# ================= BOTÕES =================
+btn_jogar = Botao(350, 260, 200, 55, "JOGAR")
+btn_conquistas = Botao(350, 340, 200, 55, "CONQUISTAS")
+
+botoes_menu = pygame.sprite.Group()
+botoes_menu.add(btn_jogar, btn_conquistas)
+
+# ================= LOOP PRINCIPAL =================
+rodando = True
+while rodando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+
+        if evento.type == pygame.MOUSEBUTTONDOWN:
+            pos = evento.pos
+            if btn_jogar.rect.collidepoint(pos):
+                print("Clicou em JOGAR")
+            elif btn_conquistas.rect.collidepoint(pos):
+                print("Clicou em CONQUISTAS")
+
+    # --- DESENHA FUNDO ---
+    tela.blit(fundo_menu, (0, 0))
+
+    # --- DESENHA BOTÕES ---
+    botoes_menu.draw(tela)
+
+    pygame.display.update()
+    clock.tick(60)
 
 # ================= CONTROLE =================
 modo = ""
