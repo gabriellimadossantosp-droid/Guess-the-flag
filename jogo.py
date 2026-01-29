@@ -42,14 +42,23 @@ fundo_quiz = pygame.transform.scale(
     pygame.image.load("FUNDO DO JOGO 2.png"), (LARGURA, ALTURA)
 )
 
-img_pais = pygame.transform.scale(
+
+img_franca = pygame.transform.scale(
     pygame.image.load("FRANÇA.png"), (400, 250)
 )
-img_rn = pygame.transform.scale(
+
+
+img_brasil = pygame.transform.scale(
+    pygame.image.load("Brasil.png.png"), (400,250)
+)
+img_natal = pygame.transform.scale(
     pygame.image.load("NATAL.png"), (400, 250)
 )
-img_estado = pygame.transform.scale(
+img_rn = pygame.transform.scale(
     pygame.image.load("RN.png"), (400, 250)
+)
+img_mato_sul = pygame.transform.scale(
+    pygame.image.load("mato grosso sul.png"), (400,250)
 )
 
 img_acerto = pygame.transform.scale(
@@ -63,7 +72,7 @@ img_erro = pygame.transform.scale(
 perguntas = {
     "Países": [
         {
-            "imagem": img_pais,
+            "imagem": img_franca,
             "opcoes": [
                 "A - França",
                 "B - Argentina",
@@ -71,11 +80,22 @@ perguntas = {
                 "D - México"
             ],
             "resposta": "A"
+        },
+
+        {
+            "imagem": img_brasil,
+            "opcoes": [
+                "A - Alemanha",
+                "B - Irã",
+                "C - Brasil",
+                "D - Japão"
+            ],
+            "resposta": "C"
         }
     ],
     "Municípios do RN": [
         {
-            "imagem": img_rn,
+            "imagem": img_natal, 
             "opcoes": [
                 "A - Mossoró",
                 "B - Natal",
@@ -87,7 +107,7 @@ perguntas = {
     ],
     "Estados Brasileiros": [
         {
-            "imagem": img_estado,
+            "imagem": img_rn,
             "opcoes": [
                 "A - São Paulo",
                 "B - Bahia",
@@ -95,6 +115,17 @@ perguntas = {
                 "D - Ceará"
             ],
             "resposta": "C"
+        },
+
+        {
+            "imagem": img_mato_sul,
+            "opcoes": [
+                "A - Mato Grosso",
+                "B - Minas Gerais",
+                "C - Piauí",
+                "D - Mato Grosso do Sul"
+            ],
+            "resposta": "D"
         }
     ]
 }
@@ -173,8 +204,8 @@ while rodando:
 
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+            rodando = False
+            
 
         if evento.type == pygame.MOUSEBUTTONDOWN:
             pos = evento.pos
@@ -230,3 +261,6 @@ while rodando:
         tela_resultado()
 
     pygame.display.update()
+
+pygame.quit()
+sys.exit()    
