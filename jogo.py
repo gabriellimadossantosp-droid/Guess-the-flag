@@ -7,7 +7,7 @@ pygame.init()
 # ================= CONFIGURAÇÕES =================
 LARGURA, ALTURA = 900, 600
 tela = pygame.display.set_mode((LARGURA, ALTURA))
-pygame.display.set_caption("Jogo de Geografia")
+pygame.display.set_caption("Adivinhe a Bandeira")
 clock = pygame.time.Clock()
 
 # ================= CORES =================
@@ -171,7 +171,7 @@ def carregar_pergunta():
 
 def tela_menu():
     tela.blit(fundo_menu, (0, 0))
-    titulo = fonte_titulo.render("JOGO DE GEOGRAFIA", True, PRETO)
+    titulo = fonte_titulo.render("ADIVINHE A BANDEIRA", True, PRETO)
     tela.blit(titulo, (LARGURA//2 - titulo.get_width()//2, 120))
     botoes_menu.draw(tela)
 
