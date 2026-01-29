@@ -51,6 +51,9 @@ img_franca = pygame.transform.scale(
 img_brasil = pygame.transform.scale(
     pygame.image.load("Brasil.png.png"), (400,250)
 )
+img_alemanha = pygame.transform.scale(
+    pygame.image.load("alemanha.png"), (400,250)
+)
 img_natal = pygame.transform.scale(
     pygame.image.load("NATAL.png"), (400, 250)
 )
@@ -59,6 +62,9 @@ img_rn = pygame.transform.scale(
 )
 img_mato_sul = pygame.transform.scale(
     pygame.image.load("mato grosso sul.png"), (400,250)
+)
+img_acre = pygame.transform.scale(
+    pygame.image.load("acre.png"), (400,250)
 )
 
 img_acerto = pygame.transform.scale(
@@ -91,6 +97,16 @@ perguntas = {
                 "D - Japão"
             ],
             "resposta": "C"
+        },
+        {
+            "imagem": img_alemanha,
+            "opcoes": [
+                "A - Israel",
+                "B - Alemanha",
+                "C - Bélgica",
+                "D - Espanha"
+            ],
+            "resposta": "B"
         }
     ],
     "Municípios do RN": [
@@ -126,6 +142,16 @@ perguntas = {
                 "D - Mato Grosso do Sul"
             ],
             "resposta": "D"
+        },
+        {
+            "imagem": img_acre,
+            "opcoes": [
+                "A - Maranhão",
+                "B - Paraná",
+                "C - Acre",
+                "D - Rondônia"
+            ],
+            "resposta": "C"
         }
     ]
 }
