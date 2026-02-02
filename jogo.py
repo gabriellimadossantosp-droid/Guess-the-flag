@@ -42,29 +42,30 @@ fundo_quiz = pygame.transform.scale(
     pygame.image.load("FUNDO DO JOGO 2.png"), (LARGURA, ALTURA)
 )
 
-
 img_franca = pygame.transform.scale(
     pygame.image.load("FRANÇA.png"), (400, 250)
 )
-
-
 img_brasil = pygame.transform.scale(
-    pygame.image.load("Brasil.png.png"), (400,250)
+    pygame.image.load("Brasil.png.png"), (400, 250)
 )
 img_alemanha = pygame.transform.scale(
-    pygame.image.load("alemanha.png"), (400,250)
+    pygame.image.load("alemanha.png"), (400, 250)
 )
-img_natal = pygame.transform.scale(
-    pygame.image.load("NATAL.png"), (400, 250)
+
+# TIMES DE FUTEBOL
+img_vasco = pygame.transform.scale(
+    pygame.image.load("Vasco.png"), (400, 250)
 )
+
+# ESTADOS
 img_rn = pygame.transform.scale(
     pygame.image.load("RN.png"), (400, 250)
 )
 img_mato_sul = pygame.transform.scale(
-    pygame.image.load("mato grosso sul.png"), (400,250)
+    pygame.image.load("mato grosso sul.png"), (400, 250)
 )
 img_acre = pygame.transform.scale(
-    pygame.image.load("acre.png"), (400,250)
+    pygame.image.load("acre.png"), (400, 250)
 )
 
 img_acerto = pygame.transform.scale(
@@ -87,7 +88,6 @@ perguntas = {
             ],
             "resposta": "A"
         },
-
         {
             "imagem": img_brasil,
             "opcoes": [
@@ -109,18 +109,20 @@ perguntas = {
             "resposta": "B"
         }
     ],
-    "Municípios do RN": [
+
+    "Bandeiras de Times de Futebol": [
         {
-            "imagem": img_natal, 
+            "imagem": img_vasco,
             "opcoes": [
-                "A - Mossoró",
-                "B - Natal",
-                "C - Caicó",
-                "D - Currais Novos"
+                "A - Flamengo",
+                "B - Vasco",
+                "C - Palmeiras",
+                "D - Corinthians"
             ],
             "resposta": "B"
         }
     ],
+
     "Estados Brasileiros": [
         {
             "imagem": img_rn,
@@ -132,7 +134,6 @@ perguntas = {
             ],
             "resposta": "C"
         },
-
         {
             "imagem": img_mato_sul,
             "opcoes": [
@@ -184,9 +185,9 @@ btn_jogar = Botao(350, 260, 200, 55, "JOGAR")
 botoes_menu.add(btn_jogar)
 
 btn_paises = Botao(300, 200, 300, 50, "PAÍSES")
-btn_municipios = Botao(300, 270, 300, 50, "MUNICÍPIOS DO RN")
+btn_times = Botao(300, 270, 300, 50, "BANDEIRAS DE TIMES")
 btn_estados = Botao(300, 340, 300, 50, "ESTADOS BRASILEIROS")
-botoes_modos.add(btn_paises, btn_municipios, btn_estados)
+botoes_modos.add(btn_paises, btn_times, btn_estados)
 
 # ================= FUNÇÕES =================
 def carregar_pergunta():
@@ -198,13 +199,13 @@ def carregar_pergunta():
 def tela_menu():
     tela.blit(fundo_menu, (0, 0))
     titulo = fonte_titulo.render("ADIVINHE A BANDEIRA", True, PRETO)
-    tela.blit(titulo, (LARGURA//2 - titulo.get_width()//2, 120))
+    tela.blit(titulo, (LARGURA // 2 - titulo.get_width() // 2, 120))
     botoes_menu.draw(tela)
 
 def tela_modos():
     tela.blit(fundo_menu, (0, 0))
     titulo = fonte_titulo.render("ESCOLHA O MODO", True, PRETO)
-    tela.blit(titulo, (LARGURA//2 - titulo.get_width()//2, 120))
+    tela.blit(titulo, (LARGURA // 2 - titulo.get_width() // 2, 120))
     botoes_modos.draw(tela)
 
 def tela_quiz():
@@ -220,7 +221,7 @@ def tela_resultado():
     tela.blit(fundo_quiz, (0, 0))
     tela.blit(
         imagem_resultado,
-        (LARGURA//2 - imagem_resultado.get_width()//2, 220)
+        (LARGURA // 2 - imagem_resultado.get_width() // 2, 220)
     )
 
 # ================= LOOP PRINCIPAL =================
@@ -231,7 +232,6 @@ while rodando:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             rodando = False
-            
 
         if evento.type == pygame.MOUSEBUTTONDOWN:
             pos = evento.pos
@@ -243,8 +243,8 @@ while rodando:
             elif estado == MODOS:
                 if btn_paises.rect.collidepoint(pos):
                     modo = "Países"
-                elif btn_municipios.rect.collidepoint(pos):
-                    modo = "Municípios do RN"
+                elif btn_times.rect.collidepoint(pos):
+                    modo = "Bandeiras de Times de Futebol"
                 elif btn_estados.rect.collidepoint(pos):
                     modo = "Estados Brasileiros"
 
@@ -266,7 +266,6 @@ while rodando:
                 indice += 1
                 if indice < len(perguntas[modo]):
                     inicio_tempo = time.time()
-                    imagem_resultado = None
                     carregar_pergunta()
                     estado = QUIZ
                 else:
@@ -289,4 +288,4 @@ while rodando:
     pygame.display.update()
 
 pygame.quit()
-sys.exit()    
+sys.exit()
