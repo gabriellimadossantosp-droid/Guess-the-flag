@@ -35,7 +35,7 @@ imagem_resultado = None
 TEMPO_MAX = 10
 inicio_tempo = 0
 
-# ================= FUNÇÃO IMAGEM =================
+# ================= FUNÇÃO IMAGEM ================
 def carregar_imagem(caminho, tamanho):
     return pygame.transform.scale(
         pygame.image.load(caminho).convert_alpha(),
