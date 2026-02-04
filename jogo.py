@@ -54,7 +54,7 @@ img_alemanha = pygame.transform.scale(
 
 # TIMES DE FUTEBOL
 img_vasco = pygame.transform.scale(
-    pygame.image.load("Vasco.png"), (400, 250)
+    pygame.image.load("Times de Futebol/Vasco.png"), (400, 250)
 )
 
 # ESTADOS
