@@ -35,44 +35,47 @@ TEMPO_MAX = 10
 inicio_tempo = 0
 
 # ================= IMAGENS =================
+
+# FUNDOS E RESULTADOS (PASTA LAYOUT)
 fundo_menu = pygame.transform.scale(
-    pygame.image.load("FUNDO DO JOGO.png"), (LARGURA, ALTURA)
+    pygame.image.load("layout/FUNDO DO JOGO.png"), (LARGURA, ALTURA)
 )
 fundo_quiz = pygame.transform.scale(
-    pygame.image.load("FUNDO DO JOGO 2.png"), (LARGURA, ALTURA)
+    pygame.image.load("layout/FUNDO DO JOGO 2.png"), (LARGURA, ALTURA)
 )
 
+img_acerto = pygame.transform.scale(
+    pygame.image.load("layout/ACERTO.png"), (400, 200)
+)
+img_erro = pygame.transform.scale(
+    pygame.image.load("layout/ERRO.png"), (400, 200)
+)
+
+# ================= PAÍSES =================
 img_franca = pygame.transform.scale(
-    pygame.image.load("FRANÇA.png"), (400, 250)
+    pygame.image.load("Países/FRANÇA.png"), (400, 250)
 )
 img_brasil = pygame.transform.scale(
-    pygame.image.load("Brasil.png.png"), (400, 250)
+    pygame.image.load("Países/Brasil.png.png"), (400, 250)
 )
 img_alemanha = pygame.transform.scale(
-    pygame.image.load("alemanha.png"), (400, 250)
+    pygame.image.load("Países/alemanha.png"), (400, 250)
 )
 
-# TIMES DE FUTEBOL
+# ================= TIMES DE FUTEBOL =================
 img_vasco = pygame.transform.scale(
     pygame.image.load("Times de Futebol/Vasco.png"), (400, 250)
 )
 
-# ESTADOS
+# ================= ESTADOS BRASILEIROS =================
 img_rn = pygame.transform.scale(
-    pygame.image.load("RN.png"), (400, 250)
+    pygame.image.load("Estados Brasileiros/RN.png"), (400, 250)
 )
 img_mato_sul = pygame.transform.scale(
-    pygame.image.load("mato grosso sul.png"), (400, 250)
+    pygame.image.load("Estados Brasileiros/mato grosso sul.png"), (400, 250)
 )
 img_acre = pygame.transform.scale(
-    pygame.image.load("acre.png"), (400, 250)
-)
-
-img_acerto = pygame.transform.scale(
-    pygame.image.load("ACERTO.png"), (400, 200)
-)
-img_erro = pygame.transform.scale(
-    pygame.image.load("ERRO.png"), (400, 200)
+    pygame.image.load("Estados Brasileiros/acre.png"), (400, 250)
 )
 
 # ================= PERGUNTAS =================
