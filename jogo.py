@@ -1,6 +1,7 @@
 import pygame
 import sys
 import time
+import random
 
 pygame.init()
 
@@ -18,7 +19,7 @@ PRETO = (0, 0, 0)
 fonte = pygame.font.SysFont("arial", 24)
 fonte_titulo = pygame.font.SysFont("arial", 40)
 
-# ================= ESTADOS =================
+# ================= ESTADOS DO JOGO =================
 MENU = 0
 MODOS = 1
 QUIZ = 2
@@ -34,130 +35,73 @@ imagem_resultado = None
 TEMPO_MAX = 10
 inicio_tempo = 0
 
-# ================= IMAGENS =================
+# ================= FUNÇÃO IMAGEM =================
+def carregar_imagem(caminho, tamanho):
+    return pygame.transform.scale(
+        pygame.image.load(caminho).convert_alpha(),
+        tamanho
+    )
 
-# FUNDOS E RESULTADOS (PASTA LAYOUT)
-fundo_menu = pygame.transform.scale(
-    pygame.image.load("layout/FUNDO DO JOGO.png"), (LARGURA, ALTURA)
-)
-fundo_quiz = pygame.transform.scale(
-    pygame.image.load("layout/FUNDO DO JOGO 2.png"), (LARGURA, ALTURA)
-)
+# ================= IMAGENS LAYOUT =================
+fundo_menu = carregar_imagem("layout/FUNDO DO JOGO.png", (LARGURA, ALTURA))
+fundo_quiz = carregar_imagem("layout/FUNDO DO JOGO 2.png", (LARGURA, ALTURA))
+img_acerto = carregar_imagem("layout/ACERTO.png", (400, 200))
+img_erro = carregar_imagem("layout/ERRO.png", (400, 200))
 
-img_acerto = pygame.transform.scale(
-    pygame.image.load("layout/ACERTO.png"), (400, 200)
-)
-img_erro = pygame.transform.scale(
-    pygame.image.load("layout/ERRO.png"), (400, 200)
-)
+# ================= SIGLAS =================
 
-# ================= PAÍSES =================
-img_franca = pygame.transform.scale(
-    pygame.image.load("Países/FRANÇA.png"), (400, 250)
-)
-img_brasil = pygame.transform.scale(
-    pygame.image.load("Países/Brasil.png.png"), (400, 250)
-)
-img_alemanha = pygame.transform.scale(
-    pygame.image.load("Países/alemanha.png"), (400, 250)
-)
+estados_siglas = [
+    "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA",
+    "MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN",
+    "RS","RO","RR","SC","SP","SE","TO"
+]
 
-# ================= TIMES DE FUTEBOL =================
-img_vasco = pygame.transform.scale(
-    pygame.image.load("Times de Futebol/Vasco.png"), (400, 250)
-)
+paises_siglas = [
+    "BR","AR","UY","CL","PY","BO","PE","CO","VE","EC",
+    "MX","US","CA","FR","DE","IT","ES","PT","GB","NL",
+    "BE","CH","AT","PL","UA","RU","CN","JP","KR","IN",
+    "AU","NZ","EG","MA","ZA"
+]
 
-# ================= ESTADOS BRASILEIROS =================
-img_rn = pygame.transform.scale(
-    pygame.image.load("Estados Brasileiros/RN.png"), (400, 250)
-)
-img_mato_sul = pygame.transform.scale(
-    pygame.image.load("Estados Brasileiros/mato grosso sul.png"), (400, 250)
-)
-img_acre = pygame.transform.scale(
-    pygame.image.load("Estados Brasileiros/acre.png"), (400, 250)
-)
+times_siglas = [
+    "VAS","FLA","FLU","BOT","PAL","COR","SAO","SAN",
+    "GRE","INT","CRU","CAM","CAP","BAH","FOR","SPO",
+    "NAU","CEA","VIT","GOI"
+]
+
+# ================= GERADOR DE PERGUNTAS =================
+def gerar_perguntas(lista_siglas, pasta):
+    perguntas = []
+
+    for sigla in lista_siglas:
+        imagem = carregar_imagem(f"{pasta}/{sigla}.png", (400, 250))
+
+        opcoes = random.sample(lista_siglas, 4)
+        if sigla not in opcoes:
+            opcoes[0] = sigla
+        random.shuffle(opcoes)
+
+        letras = ["A", "B", "C", "D"]
+        opcoes_formatadas = [
+            f"{letras[i]} - {opcoes[i]}" for i in range(4)
+        ]
+
+        resposta = letras[opcoes.index(sigla)]
+
+        perguntas.append({
+            "imagem": imagem,
+            "opcoes": opcoes_formatadas,
+            "resposta": resposta
+        })
+
+    random.shuffle(perguntas)
+    return perguntas
 
 # ================= PERGUNTAS =================
 perguntas = {
-    "Países": [
-        {
-            "imagem": img_franca,
-            "opcoes": [
-                "A - França",
-                "B - Argentina",
-                "C - Portugal",
-                "D - México"
-            ],
-            "resposta": "A"
-        },
-        {
-            "imagem": img_brasil,
-            "opcoes": [
-                "A - Alemanha",
-                "B - Irã",
-                "C - Brasil",
-                "D - Japão"
-            ],
-            "resposta": "C"
-        },
-        {
-            "imagem": img_alemanha,
-            "opcoes": [
-                "A - Israel",
-                "B - Alemanha",
-                "C - Bélgica",
-                "D - Espanha"
-            ],
-            "resposta": "B"
-        }
-    ],
-
-    "Bandeiras de Times de Futebol": [
-        {
-            "imagem": img_vasco,
-            "opcoes": [
-                "A - Flamengo",
-                "B - Vasco",
-                "C - Palmeiras",
-                "D - Corinthians"
-            ],
-            "resposta": "B"
-        }
-    ],
-
-    "Estados Brasileiros": [
-        {
-            "imagem": img_rn,
-            "opcoes": [
-                "A - São Paulo",
-                "B - Bahia",
-                "C - Rio Grande do Norte",
-                "D - Ceará"
-            ],
-            "resposta": "C"
-        },
-        {
-            "imagem": img_mato_sul,
-            "opcoes": [
-                "A - Mato Grosso",
-                "B - Minas Gerais",
-                "C - Piauí",
-                "D - Mato Grosso do Sul"
-            ],
-            "resposta": "D"
-        },
-        {
-            "imagem": img_acre,
-            "opcoes": [
-                "A - Maranhão",
-                "B - Paraná",
-                "C - Acre",
-                "D - Rondônia"
-            ],
-            "resposta": "C"
-        }
-    ]
+    "Estados": gerar_perguntas(estados_siglas, "Estados Brasileiros"),
+    "Países": gerar_perguntas(paises_siglas, "Países"),
+    "Times": gerar_perguntas(times_siglas, "Times de Futebol")
 }
 
 # ================= CLASSE BOTÃO =================
@@ -187,10 +131,11 @@ botoes_opcoes = pygame.sprite.Group()
 btn_jogar = Botao(350, 260, 200, 55, "JOGAR")
 botoes_menu.add(btn_jogar)
 
-btn_paises = Botao(300, 200, 300, 50, "PAÍSES")
-btn_times = Botao(300, 270, 300, 50, "BANDEIRAS DE TIMES")
-btn_estados = Botao(300, 340, 300, 50, "ESTADOS BRASILEIROS")
-botoes_modos.add(btn_paises, btn_times, btn_estados)
+btn_estados = Botao(300, 220, 300, 50, "ESTADOS")
+btn_paises = Botao(300, 290, 300, 50, "PAÍSES")
+btn_times = Botao(300, 360, 300, 50, "TIMES")
+
+botoes_modos.add(btn_estados, btn_paises, btn_times)
 
 # ================= FUNÇÕES =================
 def carregar_pergunta():
@@ -202,13 +147,13 @@ def carregar_pergunta():
 def tela_menu():
     tela.blit(fundo_menu, (0, 0))
     titulo = fonte_titulo.render("ADIVINHE A BANDEIRA", True, PRETO)
-    tela.blit(titulo, (LARGURA // 2 - titulo.get_width() // 2, 120))
+    tela.blit(titulo, (LARGURA//2 - titulo.get_width()//2, 120))
     botoes_menu.draw(tela)
 
 def tela_modos():
     tela.blit(fundo_menu, (0, 0))
     titulo = fonte_titulo.render("ESCOLHA O MODO", True, PRETO)
-    tela.blit(titulo, (LARGURA // 2 - titulo.get_width() // 2, 120))
+    tela.blit(titulo, (LARGURA//2 - titulo.get_width()//2, 120))
     botoes_modos.draw(tela)
 
 def tela_quiz():
@@ -224,7 +169,7 @@ def tela_resultado():
     tela.blit(fundo_quiz, (0, 0))
     tela.blit(
         imagem_resultado,
-        (LARGURA // 2 - imagem_resultado.get_width() // 2, 220)
+        (LARGURA//2 - imagem_resultado.get_width()//2, 220)
     )
 
 # ================= LOOP PRINCIPAL =================
@@ -244,12 +189,12 @@ while rodando:
                     estado = MODOS
 
             elif estado == MODOS:
-                if btn_paises.rect.collidepoint(pos):
+                if btn_estados.rect.collidepoint(pos):
+                    modo = "Estados"
+                elif btn_paises.rect.collidepoint(pos):
                     modo = "Países"
                 elif btn_times.rect.collidepoint(pos):
-                    modo = "Bandeiras de Times de Futebol"
-                elif btn_estados.rect.collidepoint(pos):
-                    modo = "Estados Brasileiros"
+                    modo = "Times"
 
                 if modo:
                     indice = 0
