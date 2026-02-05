@@ -2,6 +2,7 @@ import pygame
 import sys
 import time
 import random
+import os
 
 pygame.init()
 
@@ -35,55 +36,51 @@ imagem_resultado = None
 TEMPO_MAX = 10
 inicio_tempo = 0
 
-# ================= FUNÇÃO IMAGEM ================
+# ================= FUNÇÃO IMAGEM =================
 def carregar_imagem(caminho, tamanho):
     return pygame.transform.scale(
         pygame.image.load(caminho).convert_alpha(),
         tamanho
     )
 
-# ================= IMAGENS LAYOUT =================
+# ================= LAYOUT =================
 fundo_menu = carregar_imagem("layout/FUNDO DO JOGO.png", (LARGURA, ALTURA))
 fundo_quiz = carregar_imagem("layout/FUNDO DO JOGO 2.png", (LARGURA, ALTURA))
 img_acerto = carregar_imagem("layout/ACERTO.png", (400, 200))
 img_erro = carregar_imagem("layout/ERRO.png", (400, 200))
 
-# ================= SIGLAS =================
+# ================= PEGAR SIGLAS DAS PASTAS =================
+def pegar_siglas_da_pasta(pasta):
+    siglas = []
+    extensoes = []
+    for arquivo in os.listdir(pasta):
+        if arquivo.lower().endswith((".png", ".jpg", ".jpeg")):
+            sigla = os.path.splitext(arquivo)[0]
+            extensao = os.path.splitext(arquivo)[1]
+            siglas.append(sigla)
+            extensoes.append(extensao)
+    return siglas, extensoes
 
-estados_siglas = [
-    "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA",
-    "MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN",
-    "RS","RO","RR","SC","SP","SE","TO"
-]
-
-paises_siglas = [
-    "BR","AR","UY","CL","PY","BO","PE","CO","VE","EC",
-    "MX","US","CA","FR","DE","IT","ES","PT","GB","NL",
-    "BE","CH","AT","PL","UA","RU","CN","JP","KR","IN",
-    "AU","NZ","EG","MA","ZA"
-]
-
-times_siglas = [
-    "VAS","FLA","FLU","BOT","PAL","COR","SAO","SAN",
-    "GRE","INT","CRU","CAM","CAP","BAH","FOR","SPO",
-    "NAU","CEA","VIT","GOI"
-]
+estados_siglas, estados_extensoes = pegar_siglas_da_pasta("Estados Brasileiros")
+paises_siglas, paises_extensoes = pegar_siglas_da_pasta("Países")
+times_siglas, times_extensoes = pegar_siglas_da_pasta("Times de Futebol")
 
 # ================= GERADOR DE PERGUNTAS =================
-def gerar_perguntas(lista_siglas, pasta):
+def gerar_perguntas(lista_siglas, pasta, lista_extensoes):
     perguntas = []
 
-    for sigla in lista_siglas:
-        imagem = carregar_imagem(f"{pasta}/{sigla}.png", (400, 250))
+    for i, sigla in enumerate(lista_siglas):
+        #imagem = carregar_imagem(f"{pasta}/{sigla}.png", (400, 250))
+        imagem = carregar_imagem(f"{pasta}/{sigla}{lista_extensoes[i]}", (400, 250))
 
-        opcoes = random.sample(lista_siglas, 4)
+        opcoes = random.sample(lista_siglas, min(4, len(lista_siglas)))
         if sigla not in opcoes:
             opcoes[0] = sigla
         random.shuffle(opcoes)
 
         letras = ["A", "B", "C", "D"]
         opcoes_formatadas = [
-            f"{letras[i]} - {opcoes[i]}" for i in range(4)
+            f"{letras[i]} - {opcoes[i]}" for i in range(len(opcoes))
         ]
 
         resposta = letras[opcoes.index(sigla)]
@@ -99,9 +96,9 @@ def gerar_perguntas(lista_siglas, pasta):
 
 # ================= PERGUNTAS =================
 perguntas = {
-    "Estados": gerar_perguntas(estados_siglas, "Estados Brasileiros"),
-    "Países": gerar_perguntas(paises_siglas, "Países"),
-    "Times": gerar_perguntas(times_siglas, "Times de Futebol")
+    "Estados": gerar_perguntas(estados_siglas, "Estados Brasileiros", estados_extensoes),
+    "Países": gerar_perguntas(paises_siglas, "Países", paises_extensoes),
+    "Times": gerar_perguntas(times_siglas, "Times de Futebol", times_extensoes)
 }
 
 # ================= CLASSE BOTÃO =================
