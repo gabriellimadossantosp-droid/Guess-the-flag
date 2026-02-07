@@ -25,7 +25,11 @@ MENU = 0
 MODOS = 1
 QUIZ = 2
 RESULTADO = 3
+TELA_CONQUISTAS = 4
 estado = MENU
+
+#CONQUISTAS
+acertos_totais = 0
 
 # ================= CONTROLE =================
 modo = ""
@@ -126,7 +130,8 @@ botoes_opcoes = pygame.sprite.Group()
 
 # ================= BOTÕES =================
 btn_jogar = Botao(350, 260, 200, 55, "JOGAR")
-botoes_menu.add(btn_jogar)
+btn_conquistas = Botao(350, 330, 200, 55, "CONQUISTAS")
+botoes_menu.add(btn_jogar, btn_conquistas)
 
 btn_estados = Botao(300, 220, 300, 50, "ESTADOS")
 btn_paises = Botao(300, 290, 300, 50, "PAÍSES")
@@ -184,6 +189,8 @@ while rodando:
             if estado == MENU:
                 if btn_jogar.rect.collidepoint(pos):
                     estado = MODOS
+                elif btn_conquistas.rect.collidepoint(pos):
+                    estado = TELA_CONQUISTAS
 
             elif estado == MODOS:
                 if btn_estados.rect.collidepoint(pos):
@@ -192,6 +199,7 @@ while rodando:
                     modo = "Países"
                 elif btn_times.rect.collidepoint(pos):
                     modo = "Times"
+                
 
                 if modo:
                     indice = 0
@@ -204,7 +212,13 @@ while rodando:
                 for botao in botoes_opcoes:
                     if botao.rect.collidepoint(pos):
                         letra = botao.texto[0]
-                        imagem_resultado = img_acerto if letra == resposta else img_erro
+
+                        if letra == resposta:
+                            imagem_resultado = img_acerto
+                            acertos_totais += 1
+
+                        else:
+                            imagem_resultado = img_erro
                         estado = RESULTADO
 
             elif estado == RESULTADO:
