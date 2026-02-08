@@ -58,7 +58,7 @@ def pegar_siglas_da_pasta(pasta):
     siglas = []
     extensoes = []
     for arquivo in os.listdir(pasta):
-        if arquivo.lower().endswith((".png", ".jpg", ".jpeg")):
+        if arquivo.lower().endswith((".png", ".jpg", ".jpeg", ".webp", ".gif")):
             sigla = os.path.splitext(arquivo)[0]
             extensao = os.path.splitext(arquivo)[1]
             siglas.append(sigla)
